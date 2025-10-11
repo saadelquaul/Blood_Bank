@@ -1,7 +1,6 @@
 package org.blood_bank.entity;
 
 
-import net.bytebuddy.asm.Advice;
 import org.blood_bank.entity.converters.MedicalFlagsConverter;
 import org.blood_bank.entity.enums.BloodGroup;
 import org.blood_bank.entity.enums.DonorAvailabilityStatus;
@@ -10,7 +9,6 @@ import org.blood_bank.entity.enums.MedicalFlags;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.HashSet;
 import java.util.Objects;
