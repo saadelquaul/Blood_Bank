@@ -31,7 +31,7 @@ public class JpaDonorRepository implements DonorRepository{
     @Override
     public Optional<Donor> findByCin(String cin) {
         return JpaExecutor.execute(entityManager -> {
-            TypedQuery<Donor> query = entityManager.createQuery("SELECT d FROM Donor d WHERE d.cin = :cin", Donor.class);
+            TypedQuery<Donor> query = entityManager.createQuery("SELECT d FROM Donors d WHERE d.cin = :cin", Donor.class);
             query.setParameter("cin", cin);
             List<Donor> result = query.getResultList();
             return result.stream().findFirst();
@@ -40,13 +40,13 @@ public class JpaDonorRepository implements DonorRepository{
 
     @Override
     public List<Donor> findAll() {
-        return JpaExecutor.execute(entityManager -> entityManager.createQuery("SELECT d FROM Donor d ORDER BY d.lastName, d.firstName", Donor.class).getResultList());
+        return JpaExecutor.execute(entityManager -> entityManager.createQuery("SELECT d FROM Donors d ORDER BY d.last_Name, d.first_Name", Donor.class).getResultList());
     }
 
     @Override
     public List<Donor> findByAvailability(DonorAvailabilityStatus status) {
         return JpaExecutor.execute(entityManager -> {
-            TypedQuery<Donor> query = entityManager.createQuery("SELECT d FROM Donor d WHERE d.availabilityStatus = :status", Donor.class);
+            TypedQuery<Donor> query = entityManager.createQuery("SELECT d FROM Donors d WHERE d.availability_Status = :status", Donor.class);
             query.setParameter("status", status);
             return query.getResultList();
         });
@@ -56,7 +56,7 @@ public class JpaDonorRepository implements DonorRepository{
     public List<Donor> findCompatibleAvailableDonors(BloodGroup receiverGroup) {
         return JpaExecutor.execute(entityManager -> {
             TypedQuery<Donor> query = entityManager.createQuery(
-                    "SELECT d FROM Donor d WHERE d.availabilityStatus = :status", Donor.class);
+                    "SELECT d FROM Donors d WHERE d.availability_Status = :status", Donor.class);
             query.setParameter("status", DonorAvailabilityStatus.AVAILABLE);
             List<Donor> donors = query.getResultList();
             return donors.stream()
