@@ -16,9 +16,9 @@ public interface DonorRepository {
 
     List<Donor> findAll();
 
-    List<Donor> findByAvailability(DonorAvailabilityStatus status);
-
     List<Donor> findCompatibleAvailableDonors(BloodGroup bloodType);
 
     void deleteById(Long id);
+
+    List<Donor> findByAvailability(DonorAvailabilityStatus status);
 }
