@@ -92,7 +92,7 @@ public class Donor {
         this.lastName = lastName;
     }
 
-    public String getCIN() {
+    public String getCin() {
         return cin;
     }
 

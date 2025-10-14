@@ -53,7 +53,7 @@ public class Receiver {
     @Column(nullable = false)
     private Integer requiredUnits;
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Donation> donations = new HashSet<>();
 
     public ReceiverUrgency getUrgency() {
