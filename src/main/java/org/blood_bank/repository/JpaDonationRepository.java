@@ -34,7 +34,7 @@ public class JpaDonationRepository implements DonationRepository {
     }
 
     @Override
-    public void deleteDonation(Long id) {
+    public void deleteById(Long id) {
         JpaExecutor.executeVoid(entityManager -> {
             Donation donation = entityManager.find(Donation.class, id);
             if (donation != null) {

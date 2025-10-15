@@ -34,8 +34,7 @@ public class JpaReceiverRepository implements ReceiverRepository {
     @Override
     public Optional<Receiver> findByCin(String cin) {
         return JpaExecutor.execute(entityManager -> {
-            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receivers r WHERE r.cin = :cin", Receiver.class);
-            query.setParameter("cin", cin);
+            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receiver r WHERE r.cin = :cin", Receiver.class);            query.setParameter("cin", cin);
             List<Receiver> result = query.getResultList();
             return result.stream().findFirst();
         });

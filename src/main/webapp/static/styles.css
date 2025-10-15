@@ -1,0 +1,39 @@
+body {
+    background-color: #f5f7fb;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.05rem;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.table thead th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05rem;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.urgency-CRITICAL {
+    border-left: 4px solid #dc3545;
+}
+
+.urgency-URGENT {
+    border-left: 4px solid #fd7e14;
+}
+
+.urgency-NORMAL {
+    border-left: 4px solid #198754;
+}

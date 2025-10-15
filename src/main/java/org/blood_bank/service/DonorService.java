@@ -121,7 +121,7 @@ public class DonorService {
                             receiver.refreshStatus();
                             receiverRepository.save(receiver);
                         }
-                        donationRepository.deleteDonation(donation.getId());
+                        donationRepository.deleteById(donation.getId());
                     });
                     Optional.ofNullable(donor.getCurrentReceiver()).ifPresent(receiver -> {
                         receiver.getDonations().removeIf(donation -> donation.getDonor().equals(donor));

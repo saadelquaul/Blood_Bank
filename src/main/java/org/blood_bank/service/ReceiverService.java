@@ -75,6 +75,10 @@ public class ReceiverService {
     }
 
     public Optional<Receiver> findById(Long id) {
+        if (id == null) {
+        throw new IllegalArgumentException("Receiver ID cannot be null");
+        
+    }
         return receiverRepository.findById(id);
     }
 
