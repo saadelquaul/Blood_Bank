@@ -14,7 +14,11 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>CreatePageServlet</servlet-name>
-        <url-pattern>/create</url-pattern>
+        <url-pattern>/donor</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreatePageServlet</servlet-name>
+        <url-pattern>/receiver</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -63,7 +67,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>create</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
 </web-app>

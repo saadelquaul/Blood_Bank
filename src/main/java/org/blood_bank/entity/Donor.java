@@ -22,10 +22,10 @@ public class Donor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, name = "first_name")
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false, name = "last_name")
+    @Column(nullable = false)
     private String lastName;
 
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class Donor {
     @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false, name ="date_Of_Birth")
+    @Column(nullable = false)
     private LocalDate dateOfBirth;
 
     @Column(nullable = false)
@@ -45,16 +45,16 @@ public class Donor {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "blood_Type")
+    @Column(nullable = false)
     private BloodGroup bloodType;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name ="availability_Status")
+    @Column(nullable = false)
     private DonorAvailabilityStatus availabilityStatus =
             DonorAvailabilityStatus.AVAILABLE;
 
-    @Column(name = "medical_flags", length = 255)
+    @Column(length = 255)
     @Convert(converter = MedicalFlagsConverter.class)
     private Set<MedicalFlags> medicalFlags = new HashSet<>();
 
@@ -177,6 +177,10 @@ public class Donor {
 
     public Set<Donation> getDonations() {
         return donations;
+    }
+
+    public void setDonation(Donation donation) {
+        this.donations.add(donation);
     }
 
 

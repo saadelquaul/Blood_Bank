@@ -20,10 +20,12 @@ body {
 
 .table td, .table th {
     vertical-align: middle;
+    font-size: 15px;
 }
 
 .badge {
     font-size: 0.75rem;
+    color: black;
 }
 
 .urgency-CRITICAL {
@@ -36,4 +38,10 @@ body {
 
 .urgency-NORMAL {
     border-left: 4px solid #198754;
+}
+
+.th {
+text: center;
+font-size: 10px;
+font-weight: bold;
 }

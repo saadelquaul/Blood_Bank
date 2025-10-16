@@ -10,7 +10,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/create">Blood Bank Manager</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/donor">Blood Bank Manager</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link active" href="${pageContext.request.contextPath}/donors">Donors</a></li>
@@ -19,48 +19,48 @@
         </div>
     </div>
 </nav>
-<div class="container">
+<div style="max-width:1220px;;" class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Registered Donors</h2>
-        <a class="btn btn-outline-light text-dark" href="${pageContext.request.contextPath}/create">Add New Donor</a>
+        <a class="btn btn-outline-light text-dark" href="${pageContext.request.contextPath}/donor">Add New Donor</a>
     </div>
     <c:if test="${not empty flashMessage}">
         <div class="alert alert-info">${flashMessage}</div>
     </c:if>
     <div class="card shadow-sm">
-        <div class="card-body">
+        <div style = "width: 100%;" class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped align-middle">
                     <thead class="table-dark">
                     <tr>
                         <th>#</th>
-                        <th>Full Name</th>
-                        <th>Blood Group</th>
-                        <th>Age</th>
-                        <th>Weight (kg)</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Associated Receiver</th>
-                        <th>Last Donation</th>
-                        <th class="text-end">Actions</th>
+                        <th style = "font-size: 15px;">Full Name</th>
+                        <th style = "font-size: 15px;">Blood Group</th>
+                        <th style = "font-size: 15px;">Age</th>
+                        <th style = "font-size: 15px;">Weight</th>
+                        <th style = "font-size: 15px;">Phone</th>
+                        <th style = "font-size: 15px;">Status</th>
+                        <th style = "font-size: 15px;">Associated Receiver</th>
+                        <th style = "font-size: 15px;">Last Donation</th>
+                        <th style = "font-size: 15px;" class="text-end">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${donors}" var="donor" varStatus="loop">
-                        <tr class="${donor.availabilityStatus == 'INELIGIBLE' ? 'table-warning' : ''}">
+                        <tr class="${donor.availabilityStatus == 'NOT_ELIGIBLE' ? 'table-warning' : ''}">
                             <td>${loop.index + 1}</td>
                             <td>
-                                <div class="fw-semibold">${donor.firstName} ${donor.lastName}</div>
+                                <div class="fw-semibold">${donor.getFirstName()} ${donor.getLastName()}</div>
                                 <small class="text-muted">${donor.cin}</small>
                             </td>
-                            <td>${donor.bloodGroup}</td>
+                            <td>${donor.bloodType}</td>
                             <td>${donor.age}</td>
                             <td>${donor.weight}</td>
                             <td>
                                 <div>${donor.phone}</div>
-                                <small class="text-muted">${donor.email}</small>
+
                             </td>
-                            <td><span class="badge bg-${statusColors[donor.availabilityStatus]}">${donor.availabilityStatus}</span></td>
+                            <td><span style="color:black;" class="badge bg-${statusColors[donor.availabilityStatus]}">${donor.availabilityStatus}</span></td>
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty donor.currentReceiver}">

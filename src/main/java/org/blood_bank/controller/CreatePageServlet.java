@@ -10,12 +10,12 @@ import org.blood_bank.controller.dto.ReceiverFormData;
 import org.blood_bank.entity.Donor;
 import org.blood_bank.entity.Receiver;
 import org.blood_bank.entity.enums.BloodGroup;
+
 import org.blood_bank.entity.enums.ReceiverUrgency;
 import org.blood_bank.service.DonorService;
 import org.blood_bank.service.ReceiverService;
 import org.blood_bank.util.FlashScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,13 +41,21 @@ public class CreatePageServlet extends HttpServlet {
         prepareReferenceData(request);
         request.setAttribute("flashMessage", FlashScope.consumeFlashMessage(request));
 
-        DonorFormData donorForm = resolveDonorForm(request.getParameter("donorId"));
-        ReceiverFormData receiverForm = resolveReceiverForm(request.getParameter("receiverId"));
+        String servletPath = request.getServletPath();
 
-        request.setAttribute("donorForm", donorForm);
-        request.setAttribute("receiverForm", receiverForm);
-
-        forwardToView(request, response);
+        if (servletPath.equals("/donor")) {
+            DonorFormData donorForm = resolveDonorForm(request.getParameter("donorId"));
+            request.setAttribute("donorForm", donorForm);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/donor.jsp");
+            dispatcher.forward(request, response);
+        } else if ( servletPath.equals("/receiver")) {
+            ReceiverFormData receiverForm = resolveReceiverForm(request.getParameter("receiverId"));
+            request.setAttribute("receiverForm", receiverForm);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/receiver.jsp");
+            dispatcher.forward(request, response);
+        } else {
+            forwardToView(request, response);
+        }
     }
 
     @Override

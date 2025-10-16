@@ -6,16 +6,12 @@ import org.blood_bank.entity.Receiver;
 import org.blood_bank.entity.enums.DonorAvailabilityStatus;
 import org.blood_bank.entity.enums.MedicalFlags;
 import org.blood_bank.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class DonorService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DonorService.class);
+
     private static final Set<MedicalFlags> DISQUALIFYING_FLAGS = EnumSet.of(
             MedicalFlags.HEPATITIS,
             MedicalFlags.HIV,
@@ -56,39 +52,45 @@ public class DonorService {
         if(donor.getDateOfBirth() == null) {
             errors.add("Date of birth is required");
         }
-        if(donor.getWeight() == null || donor.getWeight() <= 0) {
-            errors.add("Weight must be a positive Number greater than 0");
-        }
         if(donor.getBloodType() == null) {
-            errors.add("Blood type/group is required");
+            errors.add("Blood group is required");
         }
         if(donor.getGender() == null ) {
             errors.add ("Gender is required");
         }
 
-        if(donor.getDateOfBirth() != null) {
-            int age = donor.getAge();
-            if(age < 18 || age > 65 ) {
-                errors.add("Donor age must be between 18 and 65");
-            }
-        }
 
-        if(donor.getWeight() != null && donor.getWeight() < 50 ) {
-            errors.add("weight must be at least 50 kg");
-        }
-
-        if(donor.getMedicalFlags() != null) {
-            donor.getMedicalFlags().stream()
-                    .filter(DISQUALIFYING_FLAGS::contains)
-                    .findFirst()
-                    .ifPresent(flag -> errors.add("Donor is not eligible due to medical flag: " + flag.name()));
-        }
         return errors;
     }
+    public boolean isDonorEligible(Donor donor) {
+            // Check medical flags
+            if (donor.getMedicalFlags() != null &&
+                    donor.getMedicalFlags().stream().anyMatch(DISQUALIFYING_FLAGS::contains)) {
+                donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_ELIGIBLE);
+                return false;
+            }
+
+            // Check weight
+            if (donor.getWeight() != null && donor.getWeight() < 50) {
+                donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_ELIGIBLE);
+                return false;
+            }
+
+            // Check date of birth (example: must be at least 18 years old)
+            if (donor.getDateOfBirth() != null &&
+                    donor.getDateOfBirth().isAfter(LocalDate.now().minusYears(18))) {
+                donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_ELIGIBLE);
+                return false;
+            }
+
+            return true;
+        }
+
+
 
     public Donor saveDonor(Donor donor) {
-        List<String> errors = validateDonor(donor);
-        if(!errors.isEmpty()) {
+
+        if(!isDonorEligible(donor)) {
             donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_ELIGIBLE);
         }else if (donor.getCurrentReceiver() != null) {
             donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_AVAILABLE);
@@ -132,12 +134,6 @@ public class DonorService {
                 });
     }
 
-    public List<Receiver> findCompatibleReceiverForDonor(Long id) {
-            return donorRepository.findById(id)
-                    .map(donor -> receiverRepository.findCompatibleReceivers(donor.getBloodType()))
-                    .orElseGet(List::of);
-    }
-
     public void markAsAssigned(Donor donor, Receiver receiver) {
         donor.setCurrentReceiver(receiver);
         donor.setAvailabilityStatus(DonorAvailabilityStatus.NOT_AVAILABLE);
@@ -145,23 +141,18 @@ public class DonorService {
         donorRepository.save(donor);
     }
 
-    public void markAsAvailable(Donor donor) {
-        donor.setCurrentReceiver(null);
-        donor.setAvailabilityStatus(DonorAvailabilityStatus.AVAILABLE);
-        donorRepository.save(donor);
-    }
-
     public Donation registerDonation(Donor donor, Receiver receiver) {
-            Donation donation = new Donation();
-            donation.setDonor(donor);
-            donation.setReceiver(receiver);
-            donation.setDonationDate(LocalDateTime.now());
-            donationRepository.save(donation);
-            LOGGER.info("Donation registered: donor {} -> receiver {}", donor.getId(), receiver.getId());
-            donor.getDonations().add(donation);
-            receiver.getDonations().add(donation);
-
-            return donation;
+        Donation donation = donationRepository.registerDonation(donor.getId(), receiver.getId());
+        donorRepository.findById(donor.getId()).ifPresent(donor1 -> {
+            donor.setLastDonationDate(LocalDate.now());
+            if (donor.getCurrentReceiver() != null && donor.getCurrentReceiver().getId().equals(receiver.getId())) {
+                donor.setCurrentReceiver(null);
+                donor.setAvailabilityStatus(DonorAvailabilityStatus.AVAILABLE);
+            }
+            donor.setLastDonationDate(LocalDate.now());
+            donorRepository.save(donor);
+        });
+        return donation;
     }
 
 }

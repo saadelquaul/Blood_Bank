@@ -3,7 +3,6 @@ package org.blood_bank.service;
 import org.blood_bank.entity.Donor;
 import org.blood_bank.entity.Receiver;
 import org.blood_bank.entity.enums.DonorAvailabilityStatus;
-import org.blood_bank.entity.enums.ReceiverUrgency;
 import org.blood_bank.repository.*;
 
 import java.time.LocalDate;
@@ -99,21 +98,6 @@ public class ReceiverService {
         });
     }
 
-    public List<Donor> findCompatibleDonors(Long receiverId) {
-        return receiverRepository.findById(receiverId)
-                .map(receiver -> donorRepository.findByAvailability(DonorAvailabilityStatus.AVAILABLE).stream()
-                        .filter(donor -> donor.getBloodType().canDonateTo(receiver.getBloodGroup()))
-                        .collect(java.util.stream.Collectors.toList()))
-                .orElseGet(List::of);
-    }
 
-    public void refreshStatus(Receiver receiver) {
-        receiver.refreshStatus();
-        receiverRepository.save(receiver);
-    }
-
-    public int resolveRequiredUnits(ReceiverUrgency urgency) {
-        return urgency != null ? urgency.getRequiredUnits() : 0;
-    }
 }
 

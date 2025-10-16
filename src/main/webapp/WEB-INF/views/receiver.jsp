@@ -1,104 +1,112 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Receiver List</title>
+    <title>Create Donor &amp; Receiver</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/styles.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/create">Blood Bank Manager</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/receiver">Blood Bank Manager</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/donors">Donors</a></li>
-                <li class="nav-item"><a class="nav-link active" href="${pageContext.request.contextPath}/receivers">Receivers</a></li>
+                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/receivers">Receivers</a></li>
             </ul>
         </div>
     </div>
 </nav>
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Registered Receivers</h2>
-        <a class="btn btn-outline-light text-dark" href="${pageContext.request.contextPath}/create">Add New Receiver</a>
-    </div>
     <c:if test="${not empty flashMessage}">
-        <div class="alert alert-info">${flashMessage}</div>
+        <div class="alert alert-success">${flashMessage}</div>
     </c:if>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Full Name</th>
-                        <th>Blood Group</th>
-                        <th>Urgency</th>
-                        <th>Status</th>
-                        <th>Needed Units</th>
-                        <th>Assigned Donors</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${receivers}" var="receiver" varStatus="loop">
-                        <tr class="urgency-${receiver.urgency}">
-                            <td>${loop.index + 1}</td>
-                            <td>
-                                <div class="fw-semibold">${receiver.firstName} ${receiver.lastName}</div>
-                                <small class="text-muted">${receiver.cin}</small>
-                            </td>
-                            <td>${receiver.bloodGroup}</td>
-                            <td><span class="badge bg-${urgencyColors[receiver.urgency]}">${receiver.urgency}</span></td>
-                            <td><span class="badge bg-${statusColors[receiver.status]}">${receiver.status}</span></td>
-                            <td>${receiver.requiredUnits}</td>
-                            <td>
-                                <c:if test="${not empty receiver.donations}">
-                                    <ul class="list-unstyled mb-0">
-                                        <c:forEach items="${receiver.donations}" var="donation">
-                                            <li>${donation.donor.firstName} ${donation.donor.lastName} <small class="text-muted">(${donation.donor.bloodGroup})</small></li>
-                                        </c:forEach>
-                                    </ul>
-                                </c:if>
-                                <c:if test="${empty receiver.donations}">
-                                    <span class="text-muted">None</span>
-                                </c:if>
-                            </td>
-                            <td class="text-end">
-                                <div class="btn-group" role="group">
-                                    <a class="btn btn-sm btn-outline-primary" href="${pageContext.request.contextPath}/create?receiverId=${receiver.id}">Edit</a>
-                                    <form class="d-inline" method="post" action="${pageContext.request.contextPath}/receivers/action" onsubmit="return confirm('Delete this receiver?');">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="${receiver.id}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </form>
-                                </div>
-                                <c:if test="${receiver.status != 'SATISFIED'}">
-                                    <form class="mt-2" method="post" action="${pageContext.request.contextPath}/assignments">
-                                        <input type="hidden" name="receiverId" value="${receiver.id}">
-                                        <input type="hidden" name="redirect" value="/receivers">
-                                        <div class="input-group input-group-sm">
-                                            <select class="form-select" name="donorId" required>
-                                                <option value="">Assign donor...</option>
-                                                <c:forEach items="${compatibleDonors[receiver.id]}" var="donor">
-                                                    <option value="${donor.id}">${donor.firstName} ${donor.lastName} (${donor.bloodGroup})</option>
-                                                </c:forEach>
-                                            </select>
-                                            <button class="btn btn-success" type="submit">Assign</button>
-                                        </div>
-                                    </form>
-                                </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-                <c:if test="${empty receivers}">
-                    <div class="text-center text-muted py-4">No receivers registered yet.</div>
-                </c:if>
+    <div class="row g-4">
+        <div class="col-lg-6 mx-auto ">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white fw-semibold">
+                    <c:choose>
+                        <c:when test="${not empty receiverForm.id}">Update Receiver</c:when>
+                        <c:otherwise>Create Receiver</c:otherwise>
+                    </c:choose>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="${pageContext.request.contextPath}/receiver">
+                        <input type="hidden" name="formType" value="receiver">
+                        <input type="hidden" name="id" value="${receiverForm.id}">
+                        <div class="mb-3">
+                            <label class="form-label">First Name*</label>
+                            <input type="text" class="form-control" name="firstName" value="${receiverForm.firstName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name*</label>
+                            <input type="text" class="form-control" name="lastName" value="${receiverForm.lastName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">National ID (CIN)*</label>
+                            <input type="text" class="form-control" name="cin" value="${receiverForm.cin}" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone*</label>
+                                <input type="tel" class="form-control" name="phone" value="${receiverForm.phone}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date of Birth*</label>
+                                <input type="date" class="form-control" name="dateOfBirth" value="${receiverForm.dateOfBirth}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender*</label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select</option>
+                                    <option value="MALE" ${receiverForm.gender == 'MALE' ? 'selected' : ''}>Male</option>
+                                    <option value="FEMALE" ${receiverForm.gender == 'FEMALE' ? 'selected' : ''}>Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Blood Group*</label>
+                                <select class="form-select" name="bloodGroup" required>
+                                    <option value="">Select</option>
+                                    <c:forEach items="${bloodGroups}" var="group">
+                                        <option value="${group}" ${receiverForm.bloodGroup == group ? 'selected' : ''}>${group}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Urgency*</label>
+                                <select class="form-select" name="urgency" required>
+                                    <c:forEach items="${urgencies}" var="urgency">
+                                        <option value="${urgency}" ${receiverForm.urgency == urgency ? 'selected' : ''}>${urgency}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                        <c:if test="${not empty receiverErrors}">
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    <c:forEach items="${receiverErrors}" var="error">
+                                        <li>${error}</li>
+                                    </c:forEach>
+                                </ul>
+                            </div>
+                        </c:if>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <c:choose>
+                                    <c:when test="${not empty receiverForm.id}">Update Receiver</c:when>
+                                    <c:otherwise>Save Receiver</c:otherwise>
+                                </c:choose>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

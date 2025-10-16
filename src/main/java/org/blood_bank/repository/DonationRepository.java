@@ -14,4 +14,6 @@ public interface DonationRepository {
     List<Donation> findAll();
 
     void deleteById(Long id);
+
+    public Donation registerDonation(Long donorId, Long receiverId);
 }
