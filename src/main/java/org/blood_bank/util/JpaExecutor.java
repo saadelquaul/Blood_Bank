@@ -24,7 +24,8 @@ public final class JpaExecutor {
             throw ex;
         } finally {
             if (entityManager.isOpen()) {
-                entityManager.close();
+                EntityManagerFactoryProvider.close();
+
             }
         }
 

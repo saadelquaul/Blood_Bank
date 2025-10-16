@@ -1,0 +1,11 @@
+# Configuration de la base de donn\u00e9es MySQL
+# COPIER ce fichier vers database.properties et modifier les valeurs
+
+# URL de connexion \u00e0 la base de donn\u00e9es
+db.url=jdbc:mysql://localhost:5432/bloodBank_db
+
+# Nom d'utilisateur MySQL
+db.username=root
+
+# Mot de passe MySQL
+db.password=votre_mot_de_passe_ici

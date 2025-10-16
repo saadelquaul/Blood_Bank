@@ -41,7 +41,9 @@ public class DonorFormData {
 
     public Donor toDonor() {
         Donor donor = new Donor();
-        donor.setId(id);
+        if (this.id != null) {
+            donor.setId(this.id);
+        }
         donor.setFirstName(firstName);
         donor.setLastName(lastName);
         donor.setCIN(cin);

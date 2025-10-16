@@ -15,33 +15,34 @@ public final class EntityManagerFactoryProvider {
     private static volatile EntityManagerFactory entityManagerFactory;
 
     private EntityManagerFactoryProvider() {
+
     }
 
     public static void initialize(String persistenceUnitName) {
-    if (entityManagerFactory == null) {
-        synchronized (EntityManagerFactoryProvider.class) {
-            if(entityManagerFactory == null) {
-                Map<String, Object> overrides = loadOverrides();
-                if(overrides.isEmpty()) {
-                    entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
-                } else {
-                    entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, overrides);
-                }
-            }
+        if (entityManagerFactory == null) {
+
+            Map<String, String> properties = new HashMap<>();
+            properties.put("javax.persistence.jdbc.url", DatabaseConfig.getUrl());
+            properties.put("javax.persistence.jdbc.user", DatabaseConfig.getUsername());
+            properties.put("javax.persistence.jdbc.password", DatabaseConfig.getPassword());
+
+            entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+
         }
-    }
     }
 
     public static EntityManager getEntityManager() {
         if(entityManagerFactory == null) {
-            throw new IllegalArgumentException("EntityManagerFactory not initialized");
+            initialize("bankBloodPU");
         }
         return entityManagerFactory.createEntityManager();
     }
 
     public static void close() {
         if(entityManagerFactory != null && entityManagerFactory.isOpen()) {
+
             entityManagerFactory.close();
+            entityManagerFactory = null;
         }
     }
 
@@ -52,7 +53,7 @@ public final class EntityManagerFactoryProvider {
         applyOverride(overrides, "javax.persistence.jdbc.url", resolve("DB_URL", dotenv));
         applyOverride(overrides, "javax.persistence.jdbc.user", resolve("DB_USER", dotenv));
         applyOverride(overrides, "javax.persistence.jdbc.password", resolve("DB_PASSWORD", dotenv));
-        applyOverride(overrides, "javax.persistence.jdbc.driver", resolve("DB_DRIVER", dotenv));
+//        applyOverride(overrides, "javax.persistence.jdbc.driver", resolve("DB_DRIVER", dotenv));
         return overrides;
     }
 

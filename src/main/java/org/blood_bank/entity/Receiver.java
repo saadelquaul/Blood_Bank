@@ -39,7 +39,7 @@ public class Receiver {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 16)
     private BloodGroup bloodGroup;
 
     @Enumerated(EnumType.STRING)

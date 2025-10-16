@@ -34,8 +34,7 @@ public class JpaReceiverRepository implements ReceiverRepository {
     @Override
     public Optional<Receiver> findByCin(String cin) {
         return JpaExecutor.execute(entityManager -> {
-            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receivers r WHERE r.cin = :cin", Receiver.class);
-            query.setParameter("cin", cin);
+            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receiver r WHERE r.cin = :cin", Receiver.class);            query.setParameter("cin", cin);
             List<Receiver> result = query.getResultList();
             return result.stream().findFirst();
         });
@@ -44,7 +43,7 @@ public class JpaReceiverRepository implements ReceiverRepository {
     @Override
     public List<Receiver> findAllSortedByUrgency() {
         return JpaExecutor.execute(entityManager -> entityManager
-                .createQuery("SELECT DISTINCT r FROM Receivers r LEFT JOIN FETCH r.donations d LEFT JOIN FETCH d.donors", Receiver.class)
+                .createQuery("SELECT r FROM Receiver r LEFT JOIN FETCH r.donations d LEFT JOIN FETCH d.donor", Receiver.class)
                 .getResultStream()
                 .sorted(Comparator.comparing(Receiver::getUrgency, Comparator.comparingInt(ReceiverUrgency::getRequiredUnits)).reversed())
                 .collect(Collectors.toList()));
@@ -53,7 +52,7 @@ public class JpaReceiverRepository implements ReceiverRepository {
     @Override
     public List<Receiver> findByStatus(ReceiverStatus status) {
         return JpaExecutor.execute(entityManager -> {
-            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receivers r WHERE r.status = :status", Receiver.class);
+            TypedQuery<Receiver> query = entityManager.createQuery("SELECT r FROM Receiver r WHERE r.status = :status", Receiver.class);
             query.setParameter("status", status);
             return query.getResultList();
         });
@@ -62,7 +61,7 @@ public class JpaReceiverRepository implements ReceiverRepository {
     @Override
     public List<Receiver> findCompatibleReceivers(BloodGroup donorGroup) {
         return JpaExecutor.execute(entityManager -> entityManager
-                .createQuery("SELECT r FROM Receivers r WHERE r.status = :status", Receiver.class)
+                .createQuery("SELECT r FROM Receiver r WHERE r.status = :status", Receiver.class)
                 .setParameter("status", ReceiverStatus.PENDING)
                 .getResultStream()
                 .filter(receiver -> donorGroup.canDonateTo(receiver.getBloodGroup()))
